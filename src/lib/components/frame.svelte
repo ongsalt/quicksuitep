@@ -7,9 +7,14 @@
   interface Props {
     children?: Snippet;
     frameSize?: Rect;
+    dragHandler?: OnDrag;
   }
 
-  let { children, frameSize = $bindable() }: Props = $props();
+  let {
+    children,
+    frameSize = $bindable(),
+    dragHandler = () => {},
+  }: Props = $props();
 
   let w = $state(0);
   let h = $state(0);
@@ -33,14 +38,6 @@
     }
     mounted = true;
   });
-
-  const dragHandler: OnDrag = async (startingPosition, offsetStream) => {
-    console.log({ startingPosition });
-    for await (const a of offsetStream) {
-      console.log(a);
-    }
-    console.log("stop");
-  };
 </script>
 
 <div

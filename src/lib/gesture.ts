@@ -10,10 +10,13 @@ export type OnDrag = (startingPosition: Position, offsetStream: AsyncIterable<Po
 
 export function onDrag(fn: OnDrag) {
   return (element: HTMLElement) => {
-    const { abort, signal } = new AbortController();
+    let abortController: AbortController; // TODO: this should be array
+    let signal = undefined as any as AbortSignal;
     let stream: ReturnType<typeof createAsyncIterator.withResolvers<Position>>;
 
     function createStream(start?: Position): AsyncIterable<Position> {
+      abortController = new AbortController();
+      signal = abortController.signal;
       stream = createAsyncIterator.withResolvers<Position>();
       if (start) {
         stream.send(start);
@@ -76,7 +79,7 @@ export function onDrag(fn: OnDrag) {
     }, { signal });
 
     return () => {
-      abort();
+      abortController?.abort();
     };
   };
 }

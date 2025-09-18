@@ -1,15 +1,28 @@
 <script lang="ts">
   import type { Snippet } from "svelte";
-    import type { Rect } from "../rect";
+  import { Rect } from "../rect";
 
   interface Props {
     children?: Snippet;
-    rect: Rect
+    fullSize: Rect;
+    rect: Rect;
   }
 
-  let { children, rect }: Props = $props();
+  let { children, rect, fullSize = Rect.zero() }: Props = $props();
+
+  // TODO: calculate scaling from fullSize and rect
+  const scale = $derived(rect.w / fullSize.w);
+  const y = $derived(rect.y);
+
+  // this should be center
+  const style = $derived(
+    `transform-origin: 50% 100% ;scale: ${scale}; width: ${fullSize.w}px; height: ${fullSize.h}px; translate: ${rect.x}px ${y}px;`,
+  );
 </script>
 
-<div class="aspect-[9_/_19] w-80 rounded-[2.5rem] overflow-clip backdrop-blur-xl bg-white/20">
+<div
+  class="absolute rounded-[2.5rem] overflow-clip backdrop-blur-xl bg-white/20"
+  {style}
+>
   {@render children?.()}
 </div>
